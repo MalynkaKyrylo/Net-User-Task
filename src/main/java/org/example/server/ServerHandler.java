@@ -20,7 +20,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
     // добавляем его канал в список каналов.
     @Override
     public void channelActive(final ChannelHandlerContext ctx) {
-        System.out.println("Client joined - " + ctx);
+        System.out.println("User joined - " + ctx);
         channels.add(ctx.channel());
     }
 
@@ -28,14 +28,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
     public void channelRead0(ChannelHandlerContext ctx, String msg) {
         System.out.println("Message received: " + msg);
         for (Channel c : channels) {
-            c.writeAndFlush("Hello " + msg + '\n');
+            c.writeAndFlush(msg + '\n');
         }
     }
 
     // В случае исключения закрываем канал.
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        System.out.println("Closing connection for client - " + ctx);
+        System.out.println("Closing connection for user - " + ctx);
         ctx.close();
     }
 }
