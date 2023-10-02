@@ -1,4 +1,4 @@
-package org.example.client;
+package org.example.user;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -8,10 +8,15 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-public final class NettyClient {
+import java.util.Scanner;
+
+public final class NettyUser {
 
     static final String HOST = "127.0.0.1";
     static final int PORT = 8001;
+    static String userName;
+    static String input;
+    static Channel channel;
 
     public static void main(String[] args) throws Exception {
 
@@ -32,18 +37,29 @@ public final class NettyClient {
                             p.addLast(new StringEncoder());
 
                             // Клиентский обработчик.
-                            p.addLast(new ClientHandler());
+                            p.addLast(new UserHandler());
 
                         }
                     });
 
             // Старт клиента.
             ChannelFuture f = b.connect(HOST, PORT).sync();
+            System.out.println("Connected to server.");
+            System.out.print("Please enter your name: ");
+            Scanner scanner = new Scanner(System.in);
+            if (scanner.hasNext()) {
+                userName = scanner.nextLine();
+                System.out.println("Welcome " + userName + ".\n" +
+                        "Type your message to chat or type \"quit\" to exit.\n");
+            }
 
-            String input = "Tom";
-            Channel channel = f.sync().channel();
-            channel.writeAndFlush(input);
-            channel.flush();
+            while (scanner.hasNext()) {
+                input = scanner.nextLine();
+                if (input.equals("quit")) System.exit(0);
+                channel = f.sync().channel();
+                channel.writeAndFlush("[" + userName + "]: " + input);
+                channel.flush();
+            }
 
             // Ожидание пока соединение не будет закрыто.
             f.channel().closeFuture().sync();
