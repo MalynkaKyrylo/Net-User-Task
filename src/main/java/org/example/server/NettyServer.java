@@ -46,7 +46,7 @@ public final class NettyServer {
 
             // Стартуем сервер.
             ChannelFuture f = b.bind(PORT).sync();
-            System.out.println("Server started and waiting for clients...");
+            System.out.println("Server started and waiting for users...");
 
             // Ждем, пока сокет сервера не будет закрыт.
             f.channel().closeFuture().sync();
